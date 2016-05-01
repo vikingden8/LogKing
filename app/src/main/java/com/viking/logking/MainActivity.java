@@ -7,12 +7,19 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -25,10 +32,48 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SharedPreferences mPrefs;
+
+    private BroadcastReceiver mRootFailReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            processRootFail();
+        }
+    };
+
+    private void processRootFail() {
+
+        int failCount = mPrefs.getInt(getString(R.string.pref_root_fail_count), 0);
+        if (failCount == 0) {
+            // show dialog first time
+            AlertDialog dlg = new AlertDialog.Builder(this)
+                    .setTitle(R.string.no_root)
+                    .setMessage(R.string.no_root_dialog)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            // ok, do nothing
+                        }
+                    })
+                    .setNeutralButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                        }
+                    })
+                    .create();
+            dlg.show();
+            mPrefs.edit().putInt(getString(R.string.pref_root_fail_count), failCount+1).apply();
+        } else if (failCount <= 3) {
+            // show toast 3 more times
+            Toast.makeText(this, R.string.toast_no_root, Toast.LENGTH_LONG).show();
+            mPrefs.edit().putInt(getString(R.string.pref_root_fail_count), failCount+1).apply();
+        }
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -38,14 +83,31 @@ public class MainActivity extends AppCompatActivity {
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    Toast.makeText(MainActivity.this, "Switch Compat is enable.", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(MainActivity.this, "Swtich Compate is disenable", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LogService.class);
+                if (isChecked) {
+                    if (!LogService.isRunning()) {
+                        startService(intent);
+                    }
+                } else {
+                    stopService(intent);
                 }
             }
         });
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter f = new IntentFilter();
+        f.addAction(LogService.ACTION_ROOT_FAILED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRootFailReceiver, f);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRootFailReceiver);
     }
 
     public static class SettingsFragment extends PreferenceFragment {
