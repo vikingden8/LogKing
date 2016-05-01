@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">LogKing</string>
+    <!--for open source and about string resources -->
+    <string name="open_source_licences">Open Source Licences</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="repo_url">https://github.com/vikingden8/LogKing</string>
+    <string name="copyright">&#169; VK Software Ltd</string>
+    <string name="by_author">by Viking Den</string>
+
+    <string name="filters">Filters</string>
+    <string name="log_level">Log Level</string>
+    <string name="auto_filter">Auto Filter</string>
+    <string name="auto_filter_summary">Show foreground process only</string>
+    <string name="tag_filter">Tag Filter</string>
+
+
+    <string name="appearance">Appearance</string>
+    <string name="text_opacity">Text Opacity</string>
+    <string name="text_size">Text Size</string>
+    <string name="background_opacity">Background Opacity</string>
+
+
+    <string name="information">Application Info</string>
+
+</resources>

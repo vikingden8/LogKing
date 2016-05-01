@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/filters">
+        <ListPreference
+            android:defaultValue="V"
+            android:dialogTitle="@string/log_level"
+            android:entries="@array/levels_entries"
+            android:entryValues="@array/levels_values"
+            android:key="@string/pref_log_level"
+            android:title="@string/log_level" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_auto_filter"
+            android:summary="@string/auto_filter_summary"
+            android:title="@string/auto_filter" />
+
+        <Preference
+            android:key="@string/pref_tag_filter"
+            android:title="@string/tag_filter" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/appearance">
+        <com.viking.logking.SeekBarPreference
+            android:defaultValue="2"
+            android:key="@string/pref_text_size"
+            android:title="@string/text_size"
+            app:max="6" />
+
+        <com.viking.logking.SeekBarPreference
+            android:defaultValue="70"
+            android:key="@string/pref_text_opacity"
+            android:title="@string/text_opacity"
+            app:max="70" />
+
+        <com.viking.logking.SeekBarPreference
+            android:defaultValue="0"
+            android:key="@string/pref_bg_opacity"
+            android:title="@string/background_opacity"
+            app:max="70" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/information">
+        <PreferenceScreen
+            android:key="@string/pref_info_open_source"
+            android:title="@string/open_source_licences" />
+
+        <PreferenceScreen
+            android:key="@string/pref_version"
+            android:title="@string/about" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
